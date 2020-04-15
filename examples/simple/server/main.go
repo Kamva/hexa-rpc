@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Kamva/hexa"
-	hgrpc "github.com/Kamva/hexa-grpc"
-	"github.com/Kamva/hexa-grpc/examples/simple/hello"
-	"github.com/Kamva/hexa-grpc/examples/simple/service"
+	hrpc "github.com/Kamva/hexa-rpc"
+	"github.com/Kamva/hexa-rpc/examples/simple/hello"
+	"github.com/Kamva/hexa-rpc/examples/simple/service"
 	"github.com/Kamva/hexa/db/mgmadapter"
 	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
@@ -32,7 +32,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	hexaCtxInt := hgrpc.NewHexaContextInterceptor(cei)
+	hexaCtxInt := hrpc.NewHexaContextInterceptor(cei)
 	// Setup hexa context interceptor
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(hexaCtxInt.UnaryServerInterceptor))
 	hello.RegisterHelloServer(grpcServer, service.New())

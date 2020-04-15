@@ -1,4 +1,4 @@
-package hgrpc
+package hrpc
 
 import (
 	"context"

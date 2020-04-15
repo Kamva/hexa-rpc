@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
-	hgrpc "github.com/Kamva/hexa-grpc"
-	"github.com/Kamva/hexa-grpc/examples/simple/hello"
+	hrpc "github.com/Kamva/hexa-rpc"
+	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 	"github.com/Kamva/hexa/db/mgmadapter"
 	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
@@ -25,7 +25,7 @@ var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 
 func main() {
-	hexaCtxtInt := hgrpc.NewHexaContextInterceptor(cei)
+	hexaCtxtInt := hrpc.NewHexaContextInterceptor(cei)
 	conn, err := grpc.Dial(*serverAddr, grpc.WithInsecure(), grpc.WithUnaryInterceptor(hexaCtxtInt.UnaryClientInterceptor))
 	if err != nil {
 		gutil.PanicErr(err)
@@ -36,7 +36,7 @@ func main() {
 
 	// With Hexa context
 	ctx := hexa.NewCtx(nil, "my_correlation_id", "en", hexa.NewGuest(), logger, translator)
-	msg, err := client.SayHello(hgrpc.Ctx(ctx), &hello.Message{Val: "mehran"})
+	msg, err := client.SayHello(hrpc.Ctx(ctx), &hello.Message{Val: "mehran"})
 	gutil.PanicErr(err)
 	fmt.Println(msg.Val)
 

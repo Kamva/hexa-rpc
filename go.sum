@@ -9,6 +9,8 @@ github.com/Joker/jade v1.0.1-0.20190614124447-d475f43051e7/go.mod h1:6E6s8o2AE4K
 github.com/Kamva/gutil v0.0.0-20200324095634-85a18fb4a696/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
 github.com/Kamva/gutil v0.0.0-20200329114904-c3f6b07357cc h1:LzTgV6OtOK/a8GtDG0IueeCAsRfJjMxQq9jnD0yvFCY=
 github.com/Kamva/gutil v0.0.0-20200329114904-c3f6b07357cc/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
+github.com/Kamva/gutil v0.0.0-20200410105054-7e8534aaefbe h1:XKy6BMy00l+sUe9W2fxQn07WCCjQJJkTtJ1iixdyunU=
+github.com/Kamva/gutil v0.0.0-20200410105054-7e8534aaefbe/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
 github.com/Kamva/hexa v0.0.0-20200403134402-8698cb821901 h1:HoLetA5gWUNx4ZKaqrYAHlV8L07ibOW72N3hnyAtkbY=
 github.com/Kamva/hexa v0.0.0-20200403134402-8698cb821901/go.mod h1:z7ephW4Dqw+xPOPUZDqR+kb4qT3/9KnNGcg7gKfjD20=
 github.com/Kamva/mgm-relation v0.0.0-20200324113035-730a602d7654 h1:J+5dRTzhIwrXBsZbIbLBRTh/okLSwQJcTGsL5llWqw4=

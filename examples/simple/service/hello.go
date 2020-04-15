@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
-	hgrpc "github.com/Kamva/hexa-grpc"
-	"github.com/Kamva/hexa-grpc/examples/simple/hello"
+	hrpc "github.com/Kamva/hexa-rpc"
+	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 )
 
 type helloService struct {
 }
 
 func (s *helloService) ctx(c context.Context) hexa.Context {
-	hexaCtx := c.Value(hgrpc.ContextKeyHexaCtx)
+	hexaCtx := c.Value(hrpc.ContextKeyHexaCtx)
 	if gutil.IsNil(hexaCtx) {
 		return nil
 	}
