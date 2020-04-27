@@ -3,14 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
 	hrpc "github.com/Kamva/hexa-rpc"
 	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 	"github.com/Kamva/hexa-rpc/examples/simple/service"
 	"github.com/Kamva/hexa/db/mgmadapter"
+	"github.com/Kamva/hexa/hexaconfig"
 	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
 	"log"
 	"net"
 )
@@ -24,6 +27,13 @@ func init() {
 var logger = hexalogger.NewPrinterDriver()
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
+var cfg = hexaconfig.NewMapDriver()
+
+func init() {
+	gutil.PanicErr(cfg.Unmarshal(hexa.Map{
+		hrpc.GRPCLogVerbosityLevel: int64(0),
+	}))
+}
 
 func main() {
 	flag.Parse()
@@ -33,6 +43,10 @@ func main() {
 	}
 
 	hexaCtxInt := hrpc.NewHexaContextInterceptor(cei)
+
+	// Set gRPC default logger:
+	grpclog.SetLoggerV2(hrpc.NewLogger(logger, cfg))
+
 	// Setup hexa context interceptor
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(hexaCtxInt.UnaryServerInterceptor))
 	hello.RegisterHelloServer(grpcServer, service.New())
