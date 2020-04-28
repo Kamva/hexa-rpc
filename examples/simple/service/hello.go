@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
 	hrpc "github.com/Kamva/hexa-rpc"
 	"github.com/Kamva/hexa-rpc/examples/simple/hello"
+	"net/http"
 )
 
 type helloService struct {
@@ -30,6 +32,16 @@ func (s *helloService) SayHello(c context.Context, m *hello.Message) (*hello.Mes
 	}
 
 	return &hello.Message{Val: msg}, nil
+}
+
+func (s *helloService) SayHelloWithErr(context.Context, *hello.Message) (*hello.Message, error) {
+	data := hexa.Map{
+		"a": "b",
+		"c": "d",
+	}
+	err := hexa.NewLocalizedError("rpc.example.code", hexa.TranslateKeyEmptyMessage, "localized message :)")
+	err = err.SetHTTPStatus(http.StatusNotFound).SetError(errors.New("example error")).SetData(data)
+	return nil, err
 }
 
 func New() hello.HelloServer {

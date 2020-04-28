@@ -51,6 +51,8 @@ func main() {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			hrpc.NewHexaContextInterceptor(cei).UnaryServerInterceptor,
 			hrpc.NewRequestLogger(logger).UnaryServerInterceptor(hrpc.DefaultLoggerOptions(true)),
+			// Error converter must be last interceptor
+			hrpc.NewErrorInterceptor().UnaryServerInterceptor(translator),
 		)),
 	)
 	hello.RegisterHelloServer(grpcServer, service.New())
