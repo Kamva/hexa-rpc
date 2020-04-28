@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Kamva/hexa"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 	"net/http"
 )
 
-const convertErrMsg = "error on converting Hexa error gRPC Status with message: "
-const convertStatusMsg = "error on converting gRPC Status into Hexa error with message: "
+const hexaToStatusError = "error on converting Hexa error into Status with message: "
+const statusToHexaError = "error on converting gRPC Status into Hexa error with message: "
 
 // Status gets a Hexa error and converts it to gRPC Status
 // Implementation Details:
@@ -24,28 +23,20 @@ func Status(hexaErr hexa.Error, t hexa.Translator) *status.Status {
 	}
 
 	code := CodeFromHTTPStatus(hexaErr.HTTPStatus())
-	localMsg, err := hexaErr.Localize(t)
-	if err != nil {
-		grpclog.Info(convertErrMsg, err.Error())
-	}
-	msg := &errdetails.LocalizedMessage{Message: localMsg}
+	localMsg, _ := hexaErr.Localize(t)
+	data, _ := json.Marshal(hexaErr.Data())
+
 	s := status.New(code, hexaErr.Error())
-
-	// Append localized message
-	s, err = s.WithDetails(msg)
+	s, err := s.WithDetails(&ErrorDetails{
+		Status:           int32(hexaErr.HTTPStatus()),
+		Code:             hexaErr.Code(),
+		LocalizedMessage: localMsg,
+		Data:             string(data),
+	})
 	if err != nil {
-		grpclog.Info(convertErrMsg, err.Error())
-	}
-
-	// Append data
-	help := &errdetails.Help{Links: linkData(hexaErr)}
-	s, err = s.WithDetails(help)
-	if err != nil {
-		grpclog.Infof(convertErrMsg, err.Error())
-		return s
+		grpclog.Infof(hexaToStatusError, err.Error())
 	}
 	return s
-
 }
 
 // Error gets a gRPC status and converts it to Hexa error
@@ -53,55 +44,22 @@ func Error(status *status.Status) hexa.Error {
 	if status == nil {
 		return nil
 	}
+	httpStatus := http.StatusInternalServerError
 	code := ""
 	localizedMsg := ""
 	data := hexa.Map{}
 	for _, detail := range status.Details() {
-		switch t := detail.(type) {
-		case *errdetails.LocalizedMessage:
-			localizedMsg = t.Message
-		case *errdetails.Help:
-			data, code = extractLinkData(t)
-		}
-	}
-	return hexa.NewLocalizedError(code, hexa.TranslateKeyEmptyMessage, localizedMsg).
-		SetHTTPStatus(HTTPStatusFromCode(status.Code())).
-		SetError(errors.New(status.Message())).
-		SetData(data)
-}
-
-func linkData(e hexa.Error) []*errdetails.Help_Link {
-	data, err := json.Marshal(e.Data())
-	if err != nil {
-		grpclog.Infof(convertErrMsg, err.Error())
-	}
-	return []*errdetails.Help_Link{
-		{
-			Description: "code",
-			Url:         e.Code(),
-		},
-		{
-			Description: "data",
-			Url:         string(data),
-		},
-	}
-}
-
-func extractLinkData(help *errdetails.Help) (data hexa.Map, code string) {
-	data = make(hexa.Map)
-	for _, link := range help.Links {
-		switch link.Description {
-		case "code":
-			code = link.Url
-		case "data":
-			err := json.Unmarshal([]byte(link.Url), &data)
+		if d, ok := detail.(*ErrorDetails); ok {
+			httpStatus = int(d.Status)
+			code = d.Code
+			localizedMsg = d.LocalizedMessage
+			err := json.Unmarshal([]byte(d.Data), &data)
 			if err != nil {
-				grpclog.Info(convertStatusMsg, err)
+				grpclog.Info(statusToHexaError, err)
 			}
 		}
 	}
-
-	return
+	return hexa.NewLocalizedError(httpStatus, code, localizedMsg, errors.New(status.Message())).SetData(data)
 }
 
 // HTTPStatusFromCode converts a gRPC error code into the corresponding HTTP response status.

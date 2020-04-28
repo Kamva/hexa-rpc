@@ -39,8 +39,8 @@ func (s *helloService) SayHelloWithErr(context.Context, *hello.Message) (*hello.
 		"a": "b",
 		"c": "d",
 	}
-	err := hexa.NewLocalizedError("rpc.example.code", hexa.TranslateKeyEmptyMessage, "localized message :)")
-	err = err.SetHTTPStatus(http.StatusNotFound).SetError(errors.New("example error")).SetData(data)
+	err := hexa.NewLocalizedError(http.StatusNotFound, "rpc.example.code", "localized message :)", errors.New("example error"))
+	err = err.SetData(data)
 	return nil, err
 }
 

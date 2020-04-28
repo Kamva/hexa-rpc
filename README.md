@@ -9,7 +9,14 @@ go get github.com/Kamva/hexa-rpc
 ```
 
 ### Proposal
-- [ ] I think we can Implement even better error interface and error converter.(e.g use gRPC status instead of http,...)
+- [ ] Change Hexa error status from http status to gRPC status, because:    
+
+  __Advantages__  
+  - If we using gRPC status, so will dont need to convert https status to gRPC status, we will just convert our gRPC status to http on the gateway responses.   
+
+  __Drawbacks__  
+  - If we use gRPC codes, so we will need to import gRPC library in all of libraries that need to define or use hexa error, while http statues exists in most languages  as standard libraries.
+  
 
 #### Todo
 - [ ] Use `recover` interceptor in the [gRPC interceptors](https://github.com/grpc-ecosystem/go-grpc-middleware).
