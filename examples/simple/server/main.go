@@ -12,6 +12,7 @@ import (
 	"github.com/Kamva/hexa/hexaconfig"
 	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"log"
@@ -42,13 +43,16 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	hexaCtxInt := hrpc.NewHexaContextInterceptor(cei)
-
 	// Set gRPC default logger:
 	grpclog.SetLoggerV2(hrpc.NewLogger(logger, cfg))
 
 	// Setup hexa context interceptor
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(hexaCtxInt.UnaryServerInterceptor))
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			hrpc.NewHexaContextInterceptor(cei).UnaryServerInterceptor,
+			hrpc.NewRequestLogger(logger).UnaryServerInterceptor(hrpc.DefaultLoggerOptions(true)),
+		)),
+	)
 	hello.RegisterHelloServer(grpcServer, service.New())
 	grpcServer.Serve(lis)
 }

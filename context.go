@@ -73,7 +73,7 @@ func NewHexaContextInterceptor(cei hexa.ContextExporterImporter) *HexaContextInt
 	return &HexaContextInterceptor{cei: cei}
 }
 
-// Ctx gets Hexa context and returns a context to pass to a gROC method.
+// Ctx gets Hexa context and embed it in a go context to pass to the gRPC methods.
 func Ctx(ctx hexa.Context) context.Context {
 	return context.WithValue(context.Background(), ContextKeyHexaCtx, ctx)
 }
