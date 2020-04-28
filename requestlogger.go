@@ -75,7 +75,7 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 
 		newLogger := l.logger.WithFields(gutil.MapToKeyValue(fields)...)
 		if hexaCtx := ctx.Value(ContextKeyHexaCtx); hexaCtx != nil {
-			newLogger = l.logger.With(hexaCtx.(hexa.Context))
+			newLogger = newLogger.With(hexaCtx.(hexa.Context))
 		}
 
 		newLogger.Info("finished unary call with code " + code.String())

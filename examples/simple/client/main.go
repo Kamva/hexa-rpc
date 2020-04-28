@@ -17,7 +17,7 @@ import (
 var serverAddr = new(string)
 
 func init() {
-	flag.StringVar(serverAddr, "port", "localhost:9090", "gRPC server port")
+	flag.StringVar(serverAddr, "port", "localhost:9010", "gRPC server port")
 }
 
 var logger = hexalogger.NewPrinterDriver()

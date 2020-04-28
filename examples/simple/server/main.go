@@ -22,7 +22,7 @@ import (
 var port = new(int)
 
 func init() {
-	flag.IntVar(port, "port", 9090, "gRPC server port")
+	flag.IntVar(port, "port", 9010, "gRPC server port")
 }
 
 var logger = hexalogger.NewPrinterDriver()
