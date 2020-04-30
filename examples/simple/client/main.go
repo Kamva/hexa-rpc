@@ -26,6 +26,7 @@ var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.Em
 
 func main() {
 	conn, err := grpc.Dial(*serverAddr, grpc.WithInsecure(), grpc.WithChainUnaryInterceptor(
+		// error interceptor must be the first interceptor.
 		hrpc.NewErrorInterceptor().UnaryClientInterceptor(),
 		hrpc.NewHexaContextInterceptor(cei).UnaryClientInterceptor,
 	))
@@ -47,13 +48,36 @@ func main() {
 	gutil.PanicErr(err)
 	fmt.Println(msg.Val)
 
-	// Check convert error
-	msg, err = client.SayHelloWithErr(context.Background(), &hello.Message{Val: "mehran"})
+	// Check error converter
+	sayHelloWithHexaErr(client)
+	sayHelloWithNativeErr(client)
+
+}
+
+func sayHelloWithNativeErr(client hello.HelloClient) {
+	_, err := client.SayHelloWithErr(context.Background(), &hello.Message{Val: "john"})
 	e, ok := err.(hexa.Error)
 	if !ok {
 		panic("error is not hexa error")
 	}
-	localMsg,_:=e.Localize(translator)
+	errorDetails(e)
+}
+
+func sayHelloWithHexaErr(client hello.HelloClient) {
+	_, err := client.SayHelloWithErr(context.Background(), &hello.Message{Val: "mehran"})
+	e, ok := err.(hexa.Error)
+	if !ok {
+		panic("error is not hexa error")
+	}
+	errorDetails(e)
+}
+
+func errorDetails(e hexa.Error) {
+	localMsg, err := e.Localize(translator)
+	if err!=nil{
+		fmt.Println("translation err: ",err)
+	}
+
 	fmt.Println("--------Hexa error----------")
 	fmt.Println("status: ", e.HTTPStatus())
 	fmt.Println("code: ", e.Code())

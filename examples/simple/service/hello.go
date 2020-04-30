@@ -34,7 +34,10 @@ func (s *helloService) SayHello(c context.Context, m *hello.Message) (*hello.Mes
 	return &hello.Message{Val: msg}, nil
 }
 
-func (s *helloService) SayHelloWithErr(context.Context, *hello.Message) (*hello.Message, error) {
+func (s *helloService) SayHelloWithErr(c context.Context, m *hello.Message) (*hello.Message, error) {
+	if m.Val=="john" {
+		return nil,errors.New("name must be john")
+	}
 	data := hexa.Map{
 		"a": "b",
 		"c": "d",
