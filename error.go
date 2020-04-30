@@ -20,7 +20,6 @@ func NewErrorInterceptor() *ErrorInterceptor {
 }
 
 // UnaryServerInterceptor returns unary server interceptor to convert Hexa error to status.
-// Note: error interceptor must be last interceptor in chained interceptor.
 func (i ErrorInterceptor) UnaryServerInterceptor(t hexa.Translator) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		resp, rErr := handler(ctx, req)

@@ -1,4 +1,4 @@
-package service
+package hello
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
 	hrpc "github.com/Kamva/hexa-rpc"
-	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 	"net/http"
 )
 
@@ -22,7 +21,7 @@ func (s *helloService) ctx(c context.Context) hexa.Context {
 	return hexaCtx.(hexa.Context)
 }
 
-func (s *helloService) SayHello(c context.Context, m *hello.Message) (*hello.Message, error) {
+func (s *helloService) SayHello(c context.Context, m *Message) (*Message, error) {
 	ctx := s.ctx(c)
 
 	msg := fmt.Sprintf("Hello %s without hexa context :)", m.Val)
@@ -31,10 +30,10 @@ func (s *helloService) SayHello(c context.Context, m *hello.Message) (*hello.Mes
 		msg = fmt.Sprintf("Hello %s with hexa context and correlation id: %s", m.Val, ctx.CorrelationID())
 	}
 
-	return &hello.Message{Val: msg}, nil
+	return &Message{Val: msg}, nil
 }
 
-func (s *helloService) SayHelloWithErr(c context.Context, m *hello.Message) (*hello.Message, error) {
+func (s *helloService) SayHelloWithErr(c context.Context, m *Message) (*Message, error) {
 	if m.Val=="john" {
 		return nil,errors.New("name must be john")
 	}
@@ -47,8 +46,8 @@ func (s *helloService) SayHelloWithErr(c context.Context, m *hello.Message) (*he
 	return nil, err
 }
 
-func New() hello.HelloServer {
+func New() HelloServer {
 	return &helloService{}
 }
 
-var _ hello.HelloServer = &helloService{}
+var _ HelloServer = &helloService{}

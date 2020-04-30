@@ -7,12 +7,12 @@ import (
 	"github.com/Kamva/hexa"
 	hrpc "github.com/Kamva/hexa-rpc"
 	"github.com/Kamva/hexa-rpc/examples/simple/hello"
-	"github.com/Kamva/hexa-rpc/examples/simple/service"
 	"github.com/Kamva/hexa/db/mgmadapter"
 	"github.com/Kamva/hexa/hexaconfig"
 	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"log"
@@ -51,10 +51,10 @@ func main() {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			hrpc.NewHexaContextInterceptor(cei).UnaryServerInterceptor,
 			hrpc.NewRequestLogger(logger).UnaryServerInterceptor(hrpc.DefaultLoggerOptions(true)),
-			// Error converter must be last interceptor
 			hrpc.NewErrorInterceptor().UnaryServerInterceptor(translator),
+			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(hrpc.RecoverHandler)),
 		)),
 	)
-	hello.RegisterHelloServer(grpcServer, service.New())
+	hello.RegisterHelloServer(grpcServer, hello.New())
 	grpcServer.Serve(lis)
 }
