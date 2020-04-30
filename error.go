@@ -25,9 +25,18 @@ func (i ErrorInterceptor) UnaryServerInterceptor(t hexa.Translator) grpc.UnarySe
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		resp, rErr := handler(ctx, req)
 
+		if rErr == nil {
+			return resp, rErr
+		}
+
+		// If error implements the GRPCStatus interface, we dont convert it to
+		if _, ok := rErr.(interface{ GRPCStatus() *status.Status }); ok {
+			return resp, rErr
+		}
+
 		baseErr, ok := gutil.CauseErr(rErr).(hexa.Error)
 		if !ok {
-			return resp, rErr
+			baseErr = ErrUnknownError.SetError(rErr)
 		}
 		return resp, Status(baseErr, t).Err()
 	}

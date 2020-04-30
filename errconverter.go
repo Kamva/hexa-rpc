@@ -10,8 +10,6 @@ import (
 	"net/http"
 )
 
-const unknownErrorCode = "hrpc.u.e.0" // hrpc.u.e.0 = hrpc.unknown.error.0
-
 const hexaToStatusError = "error on converting Hexa error into Status with message: "
 const statusToHexaError = "error on converting gRPC Status into Hexa error with message: "
 
@@ -47,7 +45,7 @@ func Error(status *status.Status) hexa.Error {
 		return nil
 	}
 	httpStatus := HTTPStatusFromCode(status.Code())
-	code := unknownErrorCode
+	code := ErrUnknownError.Code()
 	localizedMsg := ""
 	data := hexa.Map{}
 	for _, detail := range status.Details() {
