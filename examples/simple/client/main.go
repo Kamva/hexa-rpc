@@ -51,6 +51,7 @@ func main() {
 	// Check error converter
 	sayHelloWithHexaErr(client)
 	sayHelloWithNativeErr(client)
+	sayHelloWithPanic(client)
 
 }
 
@@ -65,6 +66,15 @@ func sayHelloWithNativeErr(client hello.HelloClient) {
 
 func sayHelloWithHexaErr(client hello.HelloClient) {
 	_, err := client.SayHelloWithErr(context.Background(), &hello.Message{Val: "mehran"})
+	e, ok := err.(hexa.Error)
+	if !ok {
+		panic("error is not hexa error")
+	}
+	errorDetails(e)
+}
+
+func sayHelloWithPanic(client hello.HelloClient) {
+	_, err := client.SayHelloWithErr(context.Background(), &hello.Message{Val: "panic"})
 	e, ok := err.(hexa.Error)
 	if !ok {
 		panic("error is not hexa error")

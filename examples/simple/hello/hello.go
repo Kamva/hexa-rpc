@@ -7,6 +7,7 @@ import (
 	"github.com/Kamva/gutil"
 	"github.com/Kamva/hexa"
 	hrpc "github.com/Kamva/hexa-rpc"
+	"github.com/Kamva/tracer"
 	"net/http"
 )
 
@@ -34,8 +35,11 @@ func (s *helloService) SayHello(c context.Context, m *Message) (*Message, error)
 }
 
 func (s *helloService) SayHelloWithErr(c context.Context, m *Message) (*Message, error) {
-	if m.Val=="john" {
-		return nil,errors.New("name must be john")
+	if m.Val == "john" {
+		return nil, tracer.Trace(errors.New("name must be john"))
+	}
+	if m.Val == "panic" {
+		panic("name must be john from panic")
 	}
 	data := hexa.Map{
 		"a": "b",

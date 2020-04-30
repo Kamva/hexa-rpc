@@ -9,10 +9,18 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// ErrorInterceptor implements a gRPC interceptor to
-//convert error into status and reverse.
-type ErrorInterceptor struct {
-}
+type (
+	// ErrorInterceptor implements a gRPC interceptor to
+	//convert error into status and reverse.
+	ErrorInterceptor struct{}
+
+	// ErrInterceptorOptions is the options
+	ErrInterceptorOptions struct {
+		Logger       hexa.Logger
+		Translator   hexa.Translator
+		ReportErrors bool // report errors ?
+	}
+)
 
 // NewErrorInterceptor returns new instance of the ErrorInterceptor
 func NewErrorInterceptor() *ErrorInterceptor {
@@ -20,7 +28,7 @@ func NewErrorInterceptor() *ErrorInterceptor {
 }
 
 // UnaryServerInterceptor returns unary server interceptor to convert Hexa error to status.
-func (i ErrorInterceptor) UnaryServerInterceptor(t hexa.Translator) grpc.UnaryServerInterceptor {
+func (i ErrorInterceptor) UnaryServerInterceptor(o ErrInterceptorOptions) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		resp, rErr := handler(ctx, req)
 
@@ -28,16 +36,24 @@ func (i ErrorInterceptor) UnaryServerInterceptor(t hexa.Translator) grpc.UnarySe
 			return resp, rErr
 		}
 
-		// If error implements the GRPCStatus interface, we dont convert it to
-		if _, ok := rErr.(interface{ GRPCStatus() *status.Status }); ok {
-			return resp, rErr
-		}
-
 		baseErr, ok := gutil.CauseErr(rErr).(hexa.Error)
 		if !ok {
+			st, ok := baseErr.(interface{ GRPCStatus() *status.Status })
 			baseErr = ErrUnknownError.SetError(rErr)
+
+			// If error implements the GRPCStatus interface, we convert it to Hexa error
+			if ok {
+				s := st.GRPCStatus()
+				baseErr = baseErr.SetHTTPStatus(HTTPStatusFromCode(s.Code()))
+				baseErr = baseErr.SetReportData(hexa.Map{"gRPC_status": s})
+			}
 		}
-		return resp, Status(baseErr, t).Err()
+
+		if o.ReportErrors {
+			baseErr.ReportIfNeeded(o.Logger, o.Translator)
+		}
+
+		return resp, Status(baseErr, o.Translator).Err()
 	}
 }
 

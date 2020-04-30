@@ -3,6 +3,7 @@ package hrpc
 import (
 	"errors"
 	"fmt"
+	"github.com/Kamva/tracer"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 )
 
@@ -10,9 +11,9 @@ import (
 func RecoverHandler(r interface{}) error {
 	e, ok := r.(error)
 	if ok {
-		return e
+		return tracer.Trace(e)
 	}
-	return errors.New(fmt.Sprint(e))
+	return tracer.Trace(errors.New(fmt.Sprint(r)))
 }
 
 // Assertion

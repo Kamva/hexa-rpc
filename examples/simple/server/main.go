@@ -46,12 +46,18 @@ func main() {
 	// Set gRPC default logger:
 	grpclog.SetLoggerV2(hrpc.NewLogger(logger, cfg))
 
+	errOptions := hrpc.ErrInterceptorOptions{
+		Logger:       logger,
+		Translator:   translator,
+		ReportErrors: true,
+	}
+
 	// Setup hexa context interceptor
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			hrpc.NewHexaContextInterceptor(cei).UnaryServerInterceptor,
 			hrpc.NewRequestLogger(logger).UnaryServerInterceptor(hrpc.DefaultLoggerOptions(true)),
-			hrpc.NewErrorInterceptor().UnaryServerInterceptor(translator),
+			hrpc.NewErrorInterceptor().UnaryServerInterceptor(errOptions),
 			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(hrpc.RecoverHandler)),
 		)),
 	)
