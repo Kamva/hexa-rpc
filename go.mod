@@ -3,7 +3,7 @@ module github.com/Kamva/hexa-rpc
 go 1.13
 
 require (
-	github.com/Kamva/gutil v0.0.0-20200612203639-0e1bdfead8e8
+	github.com/Kamva/gutil v0.0.0-20200612221531-e622e23dfb37
 	github.com/Kamva/hexa v0.0.0-20200428175836-8c1507eacf26
 	github.com/Kamva/mgm-relation v0.0.0-20200519074138-c83e562f7a9c // indirect
 	github.com/Kamva/tracer v0.0.0-20200410105359-fd5aa0f880a8

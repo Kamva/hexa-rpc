@@ -7,9 +7,9 @@ import (
 )
 
 // MaskMap mask all keys of a map with provided depth.
-func MaskMapKeys(inp hexa.Map, mask *field_mask.FieldMask, depth int) {
-	extractor := gutil.MapKeysExtractor{Depth: depth, Separator: "."}
-	keys := extractor.Extract(inp)
+func MaskMapKeys(m hexa.Map, mask *field_mask.FieldMask, depth int) {
+	extractor := gutil.MapPathExtractor{Depth: depth, Separator: "."}
+	keys := extractor.Extract(m)
 	mask.Paths = keys
 	return
 }
