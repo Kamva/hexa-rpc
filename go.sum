@@ -11,8 +11,8 @@ github.com/Kamva/gutil v0.0.0-20200324095634-85a18fb4a696/go.mod h1:KvaAPqUTtjac
 github.com/Kamva/gutil v0.0.0-20200410105054-7e8534aaefbe h1:XKy6BMy00l+sUe9W2fxQn07WCCjQJJkTtJ1iixdyunU=
 github.com/Kamva/gutil v0.0.0-20200410105054-7e8534aaefbe/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
 github.com/Kamva/gutil v0.0.0-20200519073657-61fe06c54bfb/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
-github.com/Kamva/gutil v0.0.0-20200519084352-5b5615128eb3 h1:q+uhcShQ0ncR5XlfSANlKqWUVAx8jo8CJTlYx+5PP/I=
-github.com/Kamva/gutil v0.0.0-20200519084352-5b5615128eb3/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
+github.com/Kamva/gutil v0.0.0-20200612203639-0e1bdfead8e8 h1:rN6Sopqzd8kV77sAW2+g6B3YsMTlj9LNZ9EIUvezJ54=
+github.com/Kamva/gutil v0.0.0-20200612203639-0e1bdfead8e8/go.mod h1:KvaAPqUTtjac/70L9pCuNEJX0FSH7+WrTo6sariE4FM=
 github.com/Kamva/hexa v0.0.0-20200428175836-8c1507eacf26 h1:b+aXsWH7P5tDAjW8MHpzKndPRQcrCf14QOmdPfRHu0w=
 github.com/Kamva/hexa v0.0.0-20200428175836-8c1507eacf26/go.mod h1:QEZGetNIQZW9SkUXc3ev5STjd0XRTZqCtmC4Dsg9RGs=
 github.com/Kamva/mgm-relation v0.0.0-20200324113035-730a602d7654 h1:J+5dRTzhIwrXBsZbIbLBRTh/okLSwQJcTGsL5llWqw4=
