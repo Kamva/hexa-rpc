@@ -6,7 +6,7 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 )
 
-// MaskMap mask all keys of a map with provided depth.
+// MaskMapPaths mask all paths in the provided map with the provided depth.
 func MaskMapPaths(m hexa.Map, mask *field_mask.FieldMask, depth int) {
 	mask.Paths = gutil.MapPathExtractor{Depth: depth, Separator: "."}.Extract(m)
 }
