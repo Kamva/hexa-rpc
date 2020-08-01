@@ -9,8 +9,8 @@ import (
 	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 	"github.com/Kamva/hexa/db/mgmadapter"
 	"github.com/Kamva/hexa/hexaconfig"
-	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
+	"github.com/Kamva/hexa/hlog"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"google.golang.org/grpc"
@@ -25,7 +25,7 @@ func init() {
 	flag.IntVar(port, "port", 9010, "gRPC server port")
 }
 
-var logger = hexalogger.NewPrinterDriver()
+var logger = hlog.NewPrinterDriver()
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 var cfg = hexaconfig.NewMapDriver()
@@ -62,5 +62,5 @@ func main() {
 		)),
 	)
 	hello.RegisterHelloServer(grpcServer, hello.New())
-	grpcServer.Serve(lis)
+	_=grpcServer.Serve(lis)
 }

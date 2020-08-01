@@ -9,8 +9,8 @@ import (
 	hrpc "github.com/Kamva/hexa-rpc"
 	"github.com/Kamva/hexa-rpc/examples/simple/hello"
 	"github.com/Kamva/hexa/db/mgmadapter"
-	"github.com/Kamva/hexa/hexalogger"
 	"github.com/Kamva/hexa/hexatranslator"
+	"github.com/Kamva/hexa/hlog"
 	"google.golang.org/grpc"
 )
 
@@ -20,7 +20,7 @@ func init() {
 	flag.StringVar(serverAddr, "port", "localhost:9010", "gRPC server port")
 }
 
-var logger = hexalogger.NewPrinterDriver()
+var logger = hlog.NewPrinterDriver()
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 
@@ -84,8 +84,8 @@ func sayHelloWithPanic(client hello.HelloClient) {
 
 func errorDetails(e hexa.Error) {
 	localMsg, err := e.Localize(translator)
-	if err!=nil{
-		fmt.Println("translation err: ",err)
+	if err != nil {
+		fmt.Println("translation err: ", err)
 	}
 
 	fmt.Println("--------Hexa error----------")
