@@ -1,7 +1,7 @@
 package hrpc
 
 import (
-	"github.com/Kamva/gutil"
+	"github.com/kamva/gutil"
 	"google.golang.org/grpc/status"
 )
 

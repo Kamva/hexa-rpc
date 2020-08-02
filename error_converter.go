@@ -3,7 +3,7 @@ package hrpc
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/hexa"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"

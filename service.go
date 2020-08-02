@@ -2,7 +2,7 @@ package hrpc
 
 import (
 	"context"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/hexa"
 )
 
 // Service is just a base struct to use in hexa services(it's optional and you can drop it).

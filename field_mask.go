@@ -1,8 +1,8 @@
 package hrpc
 
 import (
-	"github.com/Kamva/gutil"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/gutil"
+	"github.com/kamva/hexa"
 	"google.golang.org/genproto/protobuf/field_mask"
 )
 

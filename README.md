@@ -5,7 +5,7 @@ go : minimum version `1.13`
 
 #### Install
 ```
-go get github.com/Kamva/hexa-rpc
+go get github.com/kamva/hexa-rpc
 ```
 
 ### Proposal

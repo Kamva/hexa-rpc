@@ -1,7 +1,7 @@
 package hrpc
 
 import (
-	"github.com/Kamva/hexa"
+	"github.com/kamva/hexa"
 	"net/http"
 )
 

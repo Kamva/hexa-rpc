@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Kamva/gutil"
-	"github.com/Kamva/hexa"
-	hrpc "github.com/Kamva/hexa-rpc"
-	"github.com/Kamva/tracer"
+	"github.com/kamva/gutil"
+	"github.com/kamva/hexa"
+	hrpc "github.com/kamva/hexa-rpc"
+	"github.com/kamva/tracer"
 	"net/http"
 )
 

@@ -3,7 +3,7 @@ package hrpc
 import (
 	"errors"
 	"fmt"
-	"github.com/Kamva/tracer"
+	"github.com/kamva/tracer"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 )
 

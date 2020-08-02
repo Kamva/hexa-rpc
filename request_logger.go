@@ -3,8 +3,8 @@ package hrpc
 import (
 	"context"
 	"fmt"
-	"github.com/Kamva/gutil"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/gutil"
+	"github.com/kamva/hexa"
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	"google.golang.org/grpc"
 	"time"

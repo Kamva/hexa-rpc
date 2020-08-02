@@ -2,7 +2,7 @@ package hrpc
 
 import (
 	"fmt"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/hexa"
 	"google.golang.org/grpc/grpclog"
 )
 

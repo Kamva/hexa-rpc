@@ -2,8 +2,8 @@ package hrpc
 
 import (
 	"context"
-	"github.com/Kamva/gutil"
-	"github.com/Kamva/hexa"
+	"github.com/kamva/gutil"
+	"github.com/kamva/hexa"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
