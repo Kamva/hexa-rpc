@@ -20,5 +20,5 @@ import (
 //--------------------------------
 
 var (
-	ErrUnknownError = hexa.NewError(http.StatusInternalServerError, "hrpc.u.e.0", hexa.ErrKeyInternalError, nil)
+	ErrUnknownError = hexa.NewError(http.StatusInternalServerError,"lib.hrpc.unknown_error", nil)
 )

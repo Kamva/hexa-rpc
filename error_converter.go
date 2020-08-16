@@ -29,7 +29,7 @@ func Status(hexaErr hexa.Error, t hexa.Translator) *status.Status {
 	s := status.New(code, hexaErr.Error())
 	s, err := s.WithDetails(&ErrorDetails{
 		Status:           int32(hexaErr.HTTPStatus()),
-		Code:             hexaErr.Code(),
+		Id:               hexaErr.ID(),
 		LocalizedMessage: localMsg,
 		Data:             string(data),
 	})
@@ -45,13 +45,13 @@ func Error(status *status.Status) hexa.Error {
 		return nil
 	}
 	httpStatus := HTTPStatusFromCode(status.Code())
-	code := ErrUnknownError.Code()
+	id := ErrUnknownError.ID()
 	localizedMsg := ""
 	data := hexa.Map{}
 	for _, detail := range status.Details() {
 		if d, ok := detail.(*ErrorDetails); ok {
 			httpStatus = int(d.Status)
-			code = d.Code
+			id = d.Id
 			localizedMsg = d.LocalizedMessage
 			err := json.Unmarshal([]byte(d.Data), &data)
 			if err != nil {
@@ -59,7 +59,7 @@ func Error(status *status.Status) hexa.Error {
 			}
 		}
 	}
-	return hexa.NewLocalizedError(httpStatus, code, localizedMsg, errors.New(status.Message())).SetData(data)
+	return hexa.NewLocalizedError(httpStatus, id, localizedMsg, errors.New(status.Message())).SetData(data)
 }
 
 // HTTPStatusFromCode converts a gRPC error code into the corresponding HTTP response status.

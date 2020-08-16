@@ -90,7 +90,7 @@ func errorDetails(e hexa.Error) {
 
 	fmt.Println("--------Hexa error----------")
 	fmt.Println("status: ", e.HTTPStatus())
-	fmt.Println("code: ", e.Code())
+	fmt.Println("id: ", e.ID())
 	fmt.Println("data: ", e.Data())
 	fmt.Println("local msg: ", localMsg)
 	fmt.Println("error: ", e.Error())
