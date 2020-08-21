@@ -3,16 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/kamva/gutil"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/kamva/hexa"
 	hrpc "github.com/kamva/hexa-rpc"
 	"github.com/kamva/hexa-rpc/examples/simple/hello"
 	"github.com/kamva/hexa/db/mgmadapter"
-	"github.com/kamva/hexa/hexaconfig"
 	"github.com/kamva/hexa/hexatranslator"
 	"github.com/kamva/hexa/hlog"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"log"
@@ -28,13 +26,6 @@ func init() {
 var logger = hlog.NewPrinterDriver()
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
-var cfg = hexaconfig.NewMapDriver()
-
-func init() {
-	gutil.PanicErr(cfg.Unmarshal(hexa.Map{
-		hrpc.GRPCLogVerbosityLevel: int64(0),
-	}))
-}
 
 func main() {
 	flag.Parse()
@@ -44,7 +35,7 @@ func main() {
 	}
 
 	// Set gRPC default logger:
-	grpclog.SetLoggerV2(hrpc.NewLogger(logger, cfg))
+	grpclog.SetLoggerV2(hrpc.NewLogger(logger, 0))
 
 	errOptions := hrpc.ErrInterceptorOptions{
 		Logger:       logger,
@@ -62,5 +53,5 @@ func main() {
 		)),
 	)
 	hello.RegisterHelloServer(grpcServer, hello.New())
-	_=grpcServer.Serve(lis)
+	_ = grpcServer.Serve(lis)
 }

@@ -12,9 +12,6 @@ type logger struct {
 	v      int
 }
 
-// Config name for log verbosity v
-const GRPCLogVerbosityLevel = "GRPC_GO_LOG_VERBOSITY_LEVEL"
-
 func (l *logger) Info(args ...interface{}) {
 	l.logger.Info(args...)
 }
@@ -68,9 +65,9 @@ func (l *logger) V(level int) bool {
 }
 
 // NewLogger returns new instance of the gRPC Logger v2
-func NewLogger(l hexa.Logger, cfg hexa.Config) grpclog.LoggerV2 {
+func NewLogger(l hexa.Logger, level int) grpclog.LoggerV2 {
 	// Detect log v
-	return &logger{logger: l, v: int(cfg.GetInt64(GRPCLogVerbosityLevel))}
+	return &logger{logger: l, v: level}
 }
 
 var _ grpclog.LoggerV2 = &logger{}
