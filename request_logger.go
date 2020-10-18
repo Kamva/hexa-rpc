@@ -3,9 +3,9 @@ package hrpc
 import (
 	"context"
 	"fmt"
+	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
-	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -73,12 +73,10 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 		}
 		gutil.ExtendMap(fields, o.DurationFormatter(time.Since(startTime)), false)
 
-		newLogger := l.logger.WithFields(gutil.MapToKeyValue(fields)...)
-		if hexaCtx := ctx.Value(ContextKeyHexaCtx); hexaCtx != nil {
-			newLogger = newLogger.With(hexaCtx.(hexa.Context))
-		}
+		l := gutil.InterfaceDefault(ctx.Value(ContextKeyHexaCtx), l.logger).(hexa.Logger)
+		l.WithFields(gutil.MapToKeyValue(fields)...)
 
-		newLogger.Info("finished unary call with code " + code.String())
+		l.Info("finished unary call with code " + code.String())
 
 		return resp, err
 	}
