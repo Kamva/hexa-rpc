@@ -73,13 +73,12 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 		}
 		gutil.ExtendMap(fields, o.DurationFormatter(time.Since(startTime)), false)
 
-		l := l.logger
+		logger := l.logger
 		if hContext := ctx.Value(ContextKeyHexaCtx); hContext != nil {
-			l = hContext.(hexa.Context).Logger()
+			logger = hContext.(hexa.Context).Logger()
 		}
-		l.WithFields(gutil.MapToKeyValue(fields)...)
 
-		l.Info("finished unary call with code " + code.String())
+		logger.WithFields(gutil.MapToKeyValue(fields)...).Info("finished unary call with code " + code.String())
 
 		return resp, err
 	}
