@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
+	"github.com/kamva/tracer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -48,6 +49,8 @@ func (i ErrorInterceptor) UnaryServerInterceptor(o ErrInterceptorOptions) grpc.U
 				baseErr = baseErr.SetReportData(hexa.Map{"gRPC_status": s})
 			}
 		}
+		// Move stack from our hexa error to its internal error if needed.
+		baseErr = baseErr.SetError(tracer.MoveStackIfNeeded(rErr, baseErr.InternalError()))
 
 		if o.ReportErrors {
 			baseErr.ReportIfNeeded(o.Logger, o.Translator)
