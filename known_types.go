@@ -23,7 +23,7 @@ func Int32Val(v *int32) *wrapperspb.Int32Value {
 	return &wrapperspb.Int32Value{Value: *v}
 }
 
-func IntVal(v *int) *wrapperspb.Int32Value {
+func Int32ValFromInt(v *int) *wrapperspb.Int32Value {
 	if v == nil {
 		return nil
 	}
