@@ -23,6 +23,13 @@ func Int32Val(v *int32) *wrapperspb.Int32Value {
 	return &wrapperspb.Int32Value{Value: *v}
 }
 
+func IntVal(v *int) *wrapperspb.Int32Value {
+	if v == nil {
+		return nil
+	}
+	return &wrapperspb.Int32Value{Value: int32(*v)}
+}
+
 func Int64Val(v *int64) *wrapperspb.Int64Value {
 	if v == nil {
 		return nil
