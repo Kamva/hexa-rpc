@@ -20,7 +20,7 @@ func init() {
 	flag.StringVar(serverAddr, "port", "localhost:9010", "gRPC server port")
 }
 
-var logger = hlog.NewPrinterDriver()
+var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 
