@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
-	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
+	"github.com/kamva/hexa/hlog"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -61,24 +61,26 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 
 		o.DurationFormatter(time.Since(startTime))
 
-		fields := hexa.Map{
-			"error": err,
-			"code":  code,
+		fields := []hlog.Field{
+			hlog.Uint32("code", uint32(code)),
+		}
+		if err != nil {
+			fields = append(fields, hlog.Err(err))
 		}
 		if o.LogRequest {
-			fields["request"] = req
+			fields = append(fields, hlog.Any("request", req))
 		}
 		if o.LogResponse {
-			fields["resp"] = resp
+			fields = append(fields, hlog.Any("resp", resp))
 		}
-		gutil.ExtendMap(fields, o.DurationFormatter(time.Since(startTime)), false)
+		fields = append(fields, hlog.MapToFields(o.DurationFormatter(time.Since(startTime)))...)
 
 		logger := l.logger
 		if hContext := ctx.Value(ContextKeyHexaCtx); hContext != nil {
 			logger = hContext.(hexa.Context).Logger()
 		}
 
-		logger.WithFields(gutil.MapToKeyValue(fields)...).Info("finished unary call with code " + code.String())
+		logger.With(fields...).Info("finished unary call with code " + code.String())
 
 		return resp, err
 	}
