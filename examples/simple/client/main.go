@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	hrpc "github.com/kamva/hexa-rpc"
 	"github.com/kamva/hexa-rpc/examples/simple/hello"
-	"github.com/kamva/hexa/db/mgmadapter"
 	"github.com/kamva/hexa/hexatranslator"
 	"github.com/kamva/hexa/hlog"
 	"google.golang.org/grpc"
@@ -22,13 +22,13 @@ func init() {
 
 var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
-var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
+var p = hexa.NewContextPropagator(logger, translator)
 
 func main() {
 	conn, err := grpc.Dial(*serverAddr, grpc.WithInsecure(), grpc.WithChainUnaryInterceptor(
 		// error interceptor must be the first interceptor.
 		hrpc.NewErrorInterceptor().UnaryClientInterceptor(),
-		hrpc.NewHexaContextInterceptor(cei).UnaryClientInterceptor,
+		hrpc.NewHexaContextInterceptor(p).UnaryClientInterceptor,
 	))
 	if err != nil {
 		gutil.PanicErr(err)
@@ -38,20 +38,33 @@ func main() {
 	client := hello.NewHelloClient(conn)
 
 	// With Hexa context
-	ctx := hexa.NewCtx(nil, "my_correlation_id", "en", hexa.NewGuest(), logger, translator)
+	ctx := hexa.NewContext(hexa.ContextParams{
+		CorrelationId: "my_correlation_id",
+		Locale:        "en",
+		User:          hexa.NewGuest(),
+		Logger:        logger,
+		Translator:    translator,
+	})
 	msg, err := client.SayHello(hrpc.Ctx(ctx), &hello.Message{Val: "mehran"})
 	gutil.PanicErr(err)
 	fmt.Println(msg.Val)
+	hlog.Debug("end of call 1")
 
 	// Without hexa context
 	msg, err = client.SayHello(context.Background(), &hello.Message{Val: "mehran"})
 	gutil.PanicErr(err)
 	fmt.Println(msg.Val)
+	hlog.Debug("end of call 2")
 
 	// Check error converter
 	sayHelloWithHexaErr(client)
+	hlog.Debug("end of call 3")
+
 	sayHelloWithNativeErr(client)
+	hlog.Debug("end of call 4")
+
 	sayHelloWithPanic(client)
+	hlog.Debug("end of call 5")
 
 }
 

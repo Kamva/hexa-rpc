@@ -3,18 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"net"
+
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/kamva/hexa"
 	hrpc "github.com/kamva/hexa-rpc"
 	"github.com/kamva/hexa-rpc/examples/simple/hello"
-	"github.com/kamva/hexa/db/mgmadapter"
 	"github.com/kamva/hexa/hexatranslator"
 	"github.com/kamva/hexa/hlog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
-	"log"
-	"net"
 )
 
 var port = new(int)
@@ -25,7 +25,7 @@ func init() {
 
 var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
-var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
+var cei = hexa.NewContextPropagator(logger, translator)
 
 func main() {
 	flag.Parse()

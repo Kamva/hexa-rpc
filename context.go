@@ -2,41 +2,47 @@ package hrpc
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
+	"strings"
+
 	"github.com/kamva/hexa"
+	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
-// ContextKeyHexaCtx is the identifier to set the hexa context as a field in the context of a gRPC method.
-const ContextKeyHexaCtx = "__hexa_ctx__"
-
-var (
-	ErrInvalidHexaContextPayload = status.Error(codes.Internal, "invalid hexa context payload provided to json marshaller")
+const (
+	// ContextKeyHexaCtx is the identifier to set the hexa context as a field in the context of a gRPC method.
+	ContextKeyHexaCtx = "_hexa_ctx"
+	// ContextKeyHexaKeys is the key we use in grpc context to keep hexa keys list on export and import.
+	ContextKeyHexaKeys = "_hexa_ctx_keys"
 )
 
 // HexaContextInterceptor is the gRPC interceptor to pass hexa context through gRPC.
 // Note: we do not provide stream interceptors, if you think need it, create PR or issue.
 type HexaContextInterceptor struct {
-	cei hexa.ContextExporterImporter
+	p hexa.ContextPropagator
 }
 
 func (ci *HexaContextInterceptor) UnaryClientInterceptor(ctx context.Context, method string, req interface{}, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	hexaCtx := ctx.Value(ContextKeyHexaCtx)
 	if hexaCtx != nil {
-		m, err := ci.cei.Export(hexaCtx.(hexa.Context))
-		if err != nil {
-			return tracer.Trace(err)
-		}
-		ctxBytes, err := json.Marshal(m)
+		m, err := ci.p.Extract(hexaCtx.(hexa.Context))
 		if err != nil {
 			return tracer.Trace(err)
 		}
 
-		ctx = metadata.AppendToOutgoingContext(ctx, ContextKeyHexaCtx, string(ctxBytes))
+		keys := make([]string, 0)
+
+		for k, v := range m {
+			ctx = metadata.AppendToOutgoingContext(ctx, k, string(v))
+			keys = append(keys, k)
+		}
+
+		ctx = metadata.AppendToOutgoingContext(ctx, ContextKeyHexaKeys, strings.Join(keys, ","))
+	} else {
+		hlog.Warn("send request to method without Hexa context", hlog.String("method", method))
 	}
 
 	return invoker(ctx, method, req, reply, cc, opts...)
@@ -48,29 +54,41 @@ func (ci *HexaContextInterceptor) UnaryServerInterceptor(c context.Context, req 
 		return h(c, req)
 	}
 
-	ctxStrArr, ok := md[ContextKeyHexaCtx]
-	if ok {
-		m := make(hexa.Map)
-		err := json.Unmarshal([]byte(ctxStrArr[0]), &m)
-		if err != nil {
-			return nil, tracer.Trace(ErrInvalidHexaContextPayload)
-		}
+	keysStr, ok := md[ContextKeyHexaKeys]
+	if !ok {
+		hlog.Warn("get a new request without Hexa context", hlog.String("method", info.FullMethod))
 
-		hexaCtx, err := ci.cei.Import(m)
-		if err != nil {
+		return h(c, req)
+	}
+	keys := strings.Split(keysStr[0], ",")
+	m := make(map[string][]byte)
+
+	for _, k := range keys {
+		val, ok := md[k]
+		if !ok {
+			err := fmt.Errorf("can not find %s hexa key context in the gRPC meta data", k)
 			return nil, tracer.Trace(err)
 		}
-
-		// Set hexa context in the gRPC method context, now we can get it in each gRPC method.
-		c = context.WithValue(c, ContextKeyHexaCtx, hexaCtx)
+		m[k] = []byte(val[0])
 	}
+
+	var err error
+	// inject our values with hexa context :)
+	c, err = ci.p.Inject(m, c)
+	if err != nil {
+		return nil, tracer.Trace(err)
+	}
+
+	// Set hexa context in the gRPC , now we can get it in each gRPC method.
+	// Please note that you can use the raw context as hexa context also if you like.
+	c = context.WithValue(c, ContextKeyHexaCtx, hexa.MustNewContextFromRawContext(c))
 
 	return h(c, req)
 }
 
 // NewHexaContextInterceptor returns new instance of the HexaContextInterceptor.
-func NewHexaContextInterceptor(cei hexa.ContextExporterImporter) *HexaContextInterceptor {
-	return &HexaContextInterceptor{cei: cei}
+func NewHexaContextInterceptor(p hexa.ContextPropagator) *HexaContextInterceptor {
+	return &HexaContextInterceptor{p: p}
 }
 
 // Ctx gets Hexa context and embed it in a go context to pass to the gRPC methods.

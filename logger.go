@@ -65,9 +65,8 @@ func (l *logger) V(level int) bool {
 }
 
 // NewLogger returns new instance of the gRPC Logger v2
-func NewLogger(l hexa.Logger, level int) grpclog.LoggerV2 {
-	// Detect log v
-	return &logger{logger: l, v: level}
+func NewLogger(l hexa.Logger, verbosity int) grpclog.LoggerV2 {
+	return &logger{logger: l, v: verbosity}
 }
 
 var _ grpclog.LoggerV2 = &logger{}
