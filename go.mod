@@ -8,7 +8,7 @@ require (
 	github.com/kamva/gutil v0.0.0-20201107041453-68a864f6f946
 	github.com/kamva/hexa v0.0.0-20201210123552-58be39a23ee4
 	github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd
-	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
-	google.golang.org/grpc v1.27.0
-	google.golang.org/protobuf v1.23.0
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
+	google.golang.org/grpc v1.34.0
+	google.golang.org/protobuf v1.25.0
 )

@@ -1,6 +1,11 @@
 package hrpc
 
-import "google.golang.org/protobuf/types/known/wrapperspb"
+import (
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+)
 
 func StringVal(v *string) *wrapperspb.StringValue {
 	if v == nil {
@@ -49,4 +54,11 @@ func DoubleVal(v *float64) *wrapperspb.DoubleValue {
 		return nil
 	}
 	return &wrapperspb.DoubleValue{Value: *v}
+}
+
+func TimestampVal(t *time.Time) *timestamppb.Timestamp {
+	if t == nil {
+		return nil
+	}
+	return timestamppb.New(*t)
 }
