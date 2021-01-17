@@ -15,5 +15,5 @@ TODO:
   interface {
 		GRPCStatus() *Status
 	}
-  - Add interceptors to convert error to rpc status, and client interceptor to convert status to error
+  - Add interceptors to convert error to rpc status, and connect interceptor to convert status to error
 */

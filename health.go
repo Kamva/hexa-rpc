@@ -32,6 +32,7 @@ func NewHealthServer() grpc_health_v1.HealthServer {
 type grpcHealth struct {
 	id   string
 	addr string
+	cli  grpc_health_v1.HealthClient
 }
 
 func NewGRPCHealth(id string, addr string) hexa.Health {
@@ -42,24 +43,27 @@ func (g *grpcHealth) HealthIdentifier() string {
 	return "grpc_server"
 }
 
-func (g *grpcHealth) client() (grpc_health_v1.HealthClient, error) {
-	c, err := grpc.Dial(g.addr, grpc.WithInsecure())
-	if err != nil {
-		return nil, tracer.Trace(err)
+func (g *grpcHealth) connect() error {
+	if g.cli != nil {
+		return nil
 	}
 
-	client := grpc_health_v1.NewHealthClient(c)
-	return client, nil
+	cli, err := grpc.Dial(g.addr, grpc.WithInsecure())
+	if err != nil {
+		return tracer.Trace(err)
+	}
 
+	g.cli = grpc_health_v1.NewHealthClient(cli)
+
+	return nil
 }
 func (g *grpcHealth) LivenessStatus(ctx context.Context) hexa.LivenessStatus {
-	client, err := g.client()
-	if err != nil {
-		hlog.Error("error on creating grpc client connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
+	if err:=g.connect();err != nil {
+		hlog.Error("error on creating grpc connect connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusDead
 	}
 
-	res, err := client.Check(ctx, &grpc_health_v1.HealthCheckRequest{})
+	res, err := g.cli.Check(ctx, &grpc_health_v1.HealthCheckRequest{})
 	if err != nil {
 		hlog.Error("error on result of grpc health check call", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusDead
@@ -73,13 +77,12 @@ func (g *grpcHealth) LivenessStatus(ctx context.Context) hexa.LivenessStatus {
 }
 
 func (g *grpcHealth) ReadinessStatus(ctx context.Context) hexa.ReadinessStatus {
-	client, err := g.client()
-	if err != nil {
-		hlog.Error("error on creating grpc client connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
+	if err:=g.connect();err!=nil {
+		hlog.Error("error on creating grpc connect connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusUnReady
 	}
 
-	res, err := client.Check(ctx, &grpc_health_v1.HealthCheckRequest{})
+	res, err := g.cli.Check(ctx, &grpc_health_v1.HealthCheckRequest{})
 	if err != nil {
 		hlog.Error("error on result of grpc health check call", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusUnReady
