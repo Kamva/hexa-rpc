@@ -42,7 +42,7 @@ func (ci *HexaContextInterceptor) UnaryClientInterceptor(ctx context.Context, me
 
 		ctx = metadata.AppendToOutgoingContext(ctx, ContextKeyHexaKeys, strings.Join(keys, ","))
 	} else {
-		hlog.Warn("send request to method without Hexa context", hlog.String("method", method))
+		hlog.Debug("send request to method without Hexa context", hlog.String("method", method))
 	}
 
 	return invoker(ctx, method, req, reply, cc, opts...)
@@ -56,7 +56,7 @@ func (ci *HexaContextInterceptor) UnaryServerInterceptor(c context.Context, req 
 
 	keysStr, ok := md[ContextKeyHexaKeys]
 	if !ok {
-		hlog.Warn("get a new request without Hexa context", hlog.String("method", info.FullMethod))
+		// hlog.Debug("got a new request without Hexa context", hlog.String("method", info.FullMethod))
 
 		return h(c, req)
 	}
