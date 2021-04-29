@@ -38,7 +38,7 @@ func main() {
 	client := hello.NewHelloClient(conn)
 
 	// With Hexa context
-	ctx := hexa.NewContext(hexa.ContextParams{
+	ctx := hexa.NewContext(nil,hexa.ContextParams{
 		CorrelationId: "my_correlation_id",
 		Locale:        "en",
 		User:          hexa.NewGuest(),
