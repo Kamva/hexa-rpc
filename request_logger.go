@@ -3,11 +3,12 @@ package hrpc
 import (
 	"context"
 	"fmt"
+	"time"
+
 	grpc_logging "github.com/grpc-ecosystem/go-grpc-middleware/logging"
 	"github.com/kamva/hexa"
 	"github.com/kamva/hexa/hlog"
 	"google.golang.org/grpc"
-	"time"
 )
 
 //-------------------------------------------
@@ -16,7 +17,9 @@ import (
 
 // RequestLogger implements gRPC interceptor to log each request
 type RequestLogger struct {
-	logger hexa.Logger
+	logger      hexa.Logger
+	logRequest  bool
+	logResponse bool
 }
 
 // DurationFunc get a duration and return formatted duration as
@@ -63,10 +66,14 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 
 		fields := []hlog.Field{
 			hlog.Uint32("code", uint32(code)),
+			hlog.String("full_method", info.FullMethod),
 		}
 		if err != nil {
 			fields = append(fields, hlog.Err(err))
 		}
+
+		// TODO: jus in case log level is debug, log the request. its same for the response.
+		// Or maybe we should disable it totally.
 		if o.LogRequest {
 			fields = append(fields, hlog.Any("request", req))
 		}
