@@ -3,11 +3,12 @@ package hrpc
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	"github.com/kamva/hexa"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
-	"net/http"
 )
 
 const hexaToStatusError = "error on converting Hexa error into Status with message: "
@@ -140,6 +141,6 @@ func CodeFromHTTPStatus(status int) codes.Code {
 		return codes.Unavailable
 	}
 
-	grpclog.Infof("unsupported http status ", status)
+	grpclog.Infof("unsupported http status %d", status)
 	return codes.Unknown
 }
