@@ -22,7 +22,7 @@ type RequestLogger struct {
 	logResponse bool
 }
 
-// DurationFunc get a duration and return formatted duration as
+// DurationFormatter get a duration and return formatted duration as
 // key (name of field that should log) and value(formatted time)
 type DurationFormatter func(duration time.Duration) hexa.Map
 
@@ -83,7 +83,7 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 		fields = append(fields, hlog.MapToFields(o.DurationFormatter(time.Since(startTime)))...)
 
 		logger := l.logger
-		if hContext := ctx.Value(ContextKeyHexaCtx); hContext != nil {
+		if hContext, err := hexa.NewContextFromRawContext(ctx); err==nil{
 			logger = hContext.(hexa.Context).Logger()
 		}
 

@@ -4,26 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kamva/gutil"
-	"github.com/kamva/hexa"
-	hrpc "github.com/kamva/hexa-rpc"
-	"github.com/kamva/tracer"
 	"net/http"
+
+	"github.com/kamva/hexa"
+	"github.com/kamva/tracer"
 )
 
 type helloService struct {
 }
 
-func (s *helloService) ctx(c context.Context) hexa.Context {
-	hexaCtx := c.Value(hrpc.ContextKeyHexaCtx)
-	if gutil.IsNil(hexaCtx) {
-		return nil
-	}
-	return hexaCtx.(hexa.Context)
-}
-
 func (s *helloService) SayHello(c context.Context, m *Message) (*Message, error) {
-	ctx := s.ctx(c)
+	ctx, _ := hexa.NewContextFromRawContext(c)
 
 	msg := fmt.Sprintf("Hello %s without hexa context :)", m.Val)
 	if ctx != nil {

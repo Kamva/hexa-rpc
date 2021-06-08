@@ -13,8 +13,6 @@ import (
 )
 
 const (
-	// ContextKeyHexaCtx is the identifier to set the hexa context as a field in the context of a gRPC method.
-	ContextKeyHexaCtx = "_hexa_ctx"
 	// ContextKeyHexaKeys is the key we use in grpc context to keep hexa keys list on export and import.
 	ContextKeyHexaKeys = "_hexa_ctx_keys"
 )
@@ -26,8 +24,8 @@ type HexaContextInterceptor struct {
 }
 
 func (ci *HexaContextInterceptor) UnaryClientInterceptor(ctx context.Context, method string, req interface{}, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	hexaCtx := ctx.Value(ContextKeyHexaCtx)
-	if hexaCtx != nil {
+	hexaCtx, err := hexa.NewContextFromRawContext(ctx)
+	if err == nil {
 		m, err := ci.p.Extract(hexaCtx.(hexa.Context))
 		if err != nil {
 			return tracer.Trace(err)
@@ -79,21 +77,12 @@ func (ci *HexaContextInterceptor) UnaryServerInterceptor(c context.Context, req 
 		return nil, tracer.Trace(err)
 	}
 
-	// Set hexa context in the gRPC , now we can get it in each gRPC method.
-	// Please note that you can use the raw context as hexa context also if you like.
-	c = context.WithValue(c, ContextKeyHexaCtx, hexa.MustNewContextFromRawContext(c))
-
 	return h(c, req)
 }
 
 // NewHexaContextInterceptor returns new instance of the HexaContextInterceptor.
 func NewHexaContextInterceptor(p hexa.ContextPropagator) *HexaContextInterceptor {
 	return &HexaContextInterceptor{p: p}
-}
-
-// Ctx gets Hexa context and embed it in a go context to pass to the gRPC methods.
-func Ctx(ctx hexa.Context) context.Context {
-	return context.WithValue(context.Background(), ContextKeyHexaCtx, ctx)
 }
 
 var _ grpc.UnaryServerInterceptor = (&HexaContextInterceptor{}).UnaryServerInterceptor

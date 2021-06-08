@@ -38,14 +38,14 @@ func main() {
 	client := hello.NewHelloClient(conn)
 
 	// With Hexa context
-	ctx := hexa.NewContext(nil,hexa.ContextParams{
+	ctx := hexa.NewContext(nil, hexa.ContextParams{
 		CorrelationId: "my_correlation_id",
 		Locale:        "en",
 		User:          hexa.NewGuest(),
 		Logger:        logger,
 		Translator:    translator,
 	})
-	msg, err := client.SayHello(hrpc.Ctx(ctx), &hello.Message{Val: "mehran"})
+	msg, err := client.SayHello(ctx, &hello.Message{Val: "mehran"})
 	gutil.PanicErr(err)
 	fmt.Println(msg.Val)
 	hlog.Debug("end of call 1")

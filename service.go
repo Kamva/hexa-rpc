@@ -2,6 +2,7 @@ package hrpc
 
 import (
 	"context"
+
 	"github.com/kamva/hexa"
 )
 
@@ -11,5 +12,7 @@ type Service struct {
 
 // Ctx method extract the hexa context from the context of a gRPC service
 func (r Service) Ctx(c context.Context) hexa.Context {
-	return c.Value(ContextKeyHexaCtx).(hexa.Context)
+	// We ignore error, user can check if ctx is nil or not.
+	ctx, _ := hexa.NewContextFromRawContext(c)
+	return ctx
 }
