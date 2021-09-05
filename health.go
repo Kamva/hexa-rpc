@@ -58,7 +58,7 @@ func (g *grpcHealth) connect() error {
 	return nil
 }
 func (g *grpcHealth) LivenessStatus(ctx context.Context) hexa.LivenessStatus {
-	if err:=g.connect();err != nil {
+	if err := g.connect(); err != nil {
 		hlog.Error("error on creating grpc connect connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusDead
 	}
@@ -77,7 +77,7 @@ func (g *grpcHealth) LivenessStatus(ctx context.Context) hexa.LivenessStatus {
 }
 
 func (g *grpcHealth) ReadinessStatus(ctx context.Context) hexa.ReadinessStatus {
-	if err:=g.connect();err!=nil {
+	if err := g.connect(); err != nil {
 		hlog.Error("error on creating grpc connect connection", hlog.ErrStack(tracer.Trace(err)), hlog.Err(err))
 		return hexa.StatusUnReady
 	}
@@ -110,3 +110,5 @@ func (g *grpcHealth) HealthStatus(ctx context.Context) hexa.HealthStatus {
 		Ready: readiness,
 	}
 }
+
+var _ hexa.Health = &grpcHealth{}
