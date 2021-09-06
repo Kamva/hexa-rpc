@@ -12,15 +12,15 @@ import (
 // HexaService implements hexa service.
 type HexaService struct {
 	hexa.Health
-	*grpc.Server
 	net.Listener
+	*grpc.Server
 }
 
-func NewHexaService(h hexa.Health, s *grpc.Server, l net.Listener) hexa.Service {
+func NewHexaService(h hexa.Health, l net.Listener, s *grpc.Server) hexa.Service {
 	return &HexaService{
 		Health:   h,
-		Server:   s,
 		Listener: l,
+		Server:   s,
 	}
 }
 

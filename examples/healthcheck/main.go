@@ -24,9 +24,7 @@ var t = hexatranslator.NewEmptyDriver()
 const addr = ":2323"
 const healthCheckAddr = ":2300"
 
-
 type ThreadChecker struct {
-
 }
 
 func (t ThreadChecker) HealthIdentifier() string {
@@ -43,16 +41,16 @@ func (t ThreadChecker) ReadinessStatus(ctx context.Context) hexa.ReadinessStatus
 
 func (t ThreadChecker) HealthStatus(ctx context.Context) hexa.HealthStatus {
 	return hexa.HealthStatus{
-		Id:    t.HealthIdentifier(),
+		Id: t.HealthIdentifier(),
 		Tags: map[string]string{
-			"thread":fmt.Sprint(runtime.NumGoroutine()),
+			"thread": fmt.Sprint(runtime.NumGoroutine()),
 		},
 		Alive: hexa.StatusAlive,
 		Ready: hexa.StatusReady,
 	}
 }
 
-var _ hexa.Health=&ThreadChecker{}
+var _ hexa.Health = &ThreadChecker{}
 
 func main() {
 	p := hexa.NewContextPropagator(l, t)
@@ -80,12 +78,11 @@ func main() {
 
 	grpc_health_v1.RegisterHealthServer(server, hrpc.NewHealthServer())
 
-	hr:=hexa.NewHealthReporter()
-	hr.AddToChecks(hrpc.NewGRPCHealth("grpc_server",addr))
+	hr := hexa.NewHealthReporter()
+	hr.AddToChecks(hrpc.NewGRPCHealth("grpc_server", addr))
 	hr.AddToChecks(ThreadChecker{})
-	hc:=hexa.NewHealthChecker(l,healthCheckAddr)
-	gutil.PanicErr(hc.StartServer(hr))
+	hc := hexa.NewHealthChecker(l, healthCheckAddr, hr)
+	gutil.PanicErr(hc.Run())
 
 	gutil.PanicErr(server.Serve(listener))
 }
-

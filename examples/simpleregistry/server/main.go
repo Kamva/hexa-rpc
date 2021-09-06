@@ -59,7 +59,7 @@ func main() {
 
 	hello.RegisterHelloServer(grpcServer, hello.New())
 
-	hexaSrv :=hrpc.NewHexaService(hrpc.NewGRPCHealth("my_health_server", fmt.Sprintf(":%d", *port)),grpcServer,lis)
+	hexaSrv :=hrpc.NewHexaService(hrpc.NewGRPCHealth("my_health_server", fmt.Sprintf(":%d", *port)),lis,grpcServer)
 	r.Register("grpc_server", hexaSrv)
 	go func() { sr.ShutdownBySignals(r, time.Second*30) }()
 	_ = hexaSrv.(hexa.Runnable).Run()
