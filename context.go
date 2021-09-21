@@ -26,7 +26,7 @@ type HexaContextInterceptor struct {
 func (ci *HexaContextInterceptor) UnaryClientInterceptor(ctx context.Context, method string, req interface{}, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	hexaCtx, err := hexa.NewContextFromRawContext(ctx)
 	if err == nil {
-		m, err := ci.p.Inject(hexaCtx.(hexa.Context))
+		m, err := ci.p.Inject(hexaCtx)
 		if err != nil {
 			return tracer.Trace(err)
 		}
