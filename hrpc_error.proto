@@ -1,12 +1,12 @@
 syntax = "proto3";
 
 package hrpc;
-option go_package = "hrpc";
+option go_package = "github.com/kamva/hrpc";
 
 //--------------------------------
 //  Hexa error message
 //--------------------------------
-// Go Generation command: protoc --go_out=./ error.proto
+// Go Generation command: protoc --go_out=./ hrpc_error.proto
 message ErrorDetails{
   // HTTP status
   int32 status = 1;
