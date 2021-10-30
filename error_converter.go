@@ -26,7 +26,7 @@ func Status(hexaErr hexa.Error, t hexa.Translator) *status.Status {
 	code := CodeFromHTTPStatus(hexaErr.HTTPStatus())
 
 	s := status.New(code, hexaErr.Error())
-	s, err := s.WithDetails(NewErrDetails(hexaErr, t))
+	s, err := s.WithDetails(NewErrorDetails(t, hexaErr))
 	if err != nil {
 		grpclog.Infof(hexaToStatusError, err.Error())
 	}
@@ -40,7 +40,7 @@ func Error(status *status.Status) hexa.Error {
 	}
 	for _, detail := range status.Details() {
 		if d, ok := detail.(*ErrorDetails); ok {
-			return NewHexaErrFromErrDetails(d)
+			return NewHexaErrFromErrorDetails(d)
 		}
 	}
 
@@ -51,7 +51,7 @@ func Error(status *status.Status) hexa.Error {
 	return hexa.NewLocalizedError(httpStatus, id, localizedMsg, errors.New(status.Message())).SetData(data)
 }
 
-func NewErrDetails(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
+func NewErrorDetails(t hexa.Translator, hexaErr hexa.Error) *ErrorDetails {
 	if hexaErr == nil {
 		return nil
 	}
@@ -66,7 +66,11 @@ func NewErrDetails(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
 	}
 }
 
-func NewHexaErrFromErrDetails(details *ErrorDetails) hexa.Error {
+func NewErrorDetailsFromRawError(ctx hexa.Context, err error) *ErrorDetails {
+	return NewErrorDetails(ctx.Translator(), HexaErrFromErr(err))
+}
+
+func NewHexaErrFromErrorDetails(details *ErrorDetails) hexa.Error {
 	if details == nil {
 		return nil
 	}
