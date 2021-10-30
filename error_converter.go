@@ -24,16 +24,9 @@ func Status(hexaErr hexa.Error, t hexa.Translator) *status.Status {
 	}
 
 	code := CodeFromHTTPStatus(hexaErr.HTTPStatus())
-	localMsg, _ := hexaErr.Localize(t)
-	data, _ := json.Marshal(hexaErr.Data())
 
 	s := status.New(code, hexaErr.Error())
-	s, err := s.WithDetails(&ErrorDetails{
-		Status:           int32(hexaErr.HTTPStatus()),
-		Id:               hexaErr.ID(),
-		LocalizedMessage: localMsg,
-		Data:             string(data),
-	})
+	s, err := s.WithDetails(ErrDetailsFromErr(hexaErr, t))
 	if err != nil {
 		grpclog.Infof(hexaToStatusError, err.Error())
 	}
@@ -45,22 +38,59 @@ func Error(status *status.Status) hexa.Error {
 	if status == nil {
 		return nil
 	}
+	for _, detail := range status.Details() {
+		if d, ok := detail.(*ErrorDetails); ok {
+			return ErrDetailsToErr(d)
+		}
+	}
+
 	httpStatus := HTTPStatusFromCode(status.Code())
 	id := ErrUnknownError.ID()
 	localizedMsg := ""
 	data := hexa.Map{}
-	for _, detail := range status.Details() {
-		if d, ok := detail.(*ErrorDetails); ok {
-			httpStatus = int(d.Status)
-			id = d.Id
-			localizedMsg = d.LocalizedMessage
-			err := json.Unmarshal([]byte(d.Data), &data)
-			if err != nil {
-				grpclog.Info(statusToHexaError, err)
-			}
-		}
-	}
 	return hexa.NewLocalizedError(httpStatus, id, localizedMsg, errors.New(status.Message())).SetData(data)
+}
+
+func ErrDetailsFromErr(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
+	if hexaErr == nil {
+		return nil
+	}
+
+	localMsg, _ := hexaErr.Localize(t)
+	data, _ := json.Marshal(hexaErr.Data())
+	return &ErrorDetails{
+		Status:           int32(hexaErr.HTTPStatus()),
+		Id:               hexaErr.ID(),
+		LocalizedMessage: localMsg,
+		Data:             string(data),
+	}
+}
+
+// HexaErrFromErr returns hexa error from raw error.
+func HexaErrFromErr(err error) hexa.Error {
+	if err == nil {
+		return nil
+	}
+
+	if hexaErr := hexa.AsHexaErr(err); hexaErr != nil {
+		return hexaErr
+	}
+
+	return ErrUnknownError.SetError(err)
+}
+
+func ErrDetailsToErr(details *ErrorDetails) hexa.Error {
+	if details == nil {
+		return nil
+	}
+
+	data := hexa.Map{}
+	err := json.Unmarshal([]byte(details.Data), &data)
+	if err != nil {
+		grpclog.Info(statusToHexaError, err)
+	}
+
+	return hexa.NewLocalizedError(int(details.Status), details.Id, details.LocalizedMessage, nil).SetData(data)
 }
 
 // HTTPStatusFromCode converts a gRPC error code into the corresponding HTTP response status.
