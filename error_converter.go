@@ -26,7 +26,7 @@ func Status(hexaErr hexa.Error, t hexa.Translator) *status.Status {
 	code := CodeFromHTTPStatus(hexaErr.HTTPStatus())
 
 	s := status.New(code, hexaErr.Error())
-	s, err := s.WithDetails(ErrDetailsFromErr(hexaErr, t))
+	s, err := s.WithDetails(NewErrDetails(hexaErr, t))
 	if err != nil {
 		grpclog.Infof(hexaToStatusError, err.Error())
 	}
@@ -40,7 +40,7 @@ func Error(status *status.Status) hexa.Error {
 	}
 	for _, detail := range status.Details() {
 		if d, ok := detail.(*ErrorDetails); ok {
-			return ErrDetailsToErr(d)
+			return NewHexaErrFromErrDetails(d)
 		}
 	}
 
@@ -51,7 +51,7 @@ func Error(status *status.Status) hexa.Error {
 	return hexa.NewLocalizedError(httpStatus, id, localizedMsg, errors.New(status.Message())).SetData(data)
 }
 
-func ErrDetailsFromErr(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
+func NewErrDetails(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
 	if hexaErr == nil {
 		return nil
 	}
@@ -66,20 +66,7 @@ func ErrDetailsFromErr(hexaErr hexa.Error, t hexa.Translator) *ErrorDetails {
 	}
 }
 
-// HexaErrFromErr returns hexa error from raw error.
-func HexaErrFromErr(err error) hexa.Error {
-	if err == nil {
-		return nil
-	}
-
-	if hexaErr := hexa.AsHexaErr(err); hexaErr != nil {
-		return hexaErr
-	}
-
-	return ErrUnknownError.SetError(err)
-}
-
-func ErrDetailsToErr(details *ErrorDetails) hexa.Error {
+func NewHexaErrFromErrDetails(details *ErrorDetails) hexa.Error {
 	if details == nil {
 		return nil
 	}
@@ -91,6 +78,19 @@ func ErrDetailsToErr(details *ErrorDetails) hexa.Error {
 	}
 
 	return hexa.NewLocalizedError(int(details.Status), details.Id, details.LocalizedMessage, nil).SetData(data)
+}
+
+// HexaErrFromErr returns hexa error from raw error.
+func HexaErrFromErr(err error) hexa.Error {
+	if err == nil {
+		return nil
+	}
+
+	if hexaErr := hexa.AsHexaErr(err); hexaErr != nil {
+		return hexaErr
+	}
+
+	return ErrUnknownError.SetError(err)
 }
 
 // HTTPStatusFromCode converts a gRPC error code into the corresponding HTTP response status.

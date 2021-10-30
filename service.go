@@ -16,3 +16,7 @@ func (r Service) Ctx(c context.Context) hexa.Context {
 	ctx, _ := hexa.NewContextFromRawContext(c)
 	return ctx
 }
+
+func (r Service) Error(ctx context.Context, err error) *ErrorDetails {
+	return NewErrDetails(HexaErrFromErr(err), r.Ctx(ctx).Translator())
+}
