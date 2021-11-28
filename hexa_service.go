@@ -11,7 +11,7 @@ import (
 
 // HexaService implements hexa service.
 type HexaService struct {
-	hexa.Health
+	hexa.Health // Embed to include health check too.
 	net.Listener
 	*grpc.Server
 }

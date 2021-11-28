@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"runtime"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -13,6 +14,7 @@ import (
 	hrpc "github.com/kamva/hexa-rpc"
 	"github.com/kamva/hexa/hexatranslator"
 	"github.com/kamva/hexa/hlog"
+	"github.com/kamva/hexa/probe"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -22,7 +24,7 @@ var l = hlog.NewPrinterDriver(hlog.DebugLevel)
 var t = hexatranslator.NewEmptyDriver()
 
 const addr = ":2323"
-const healthCheckAddr = ":2300"
+const probeAddr = ":2300"
 
 type ThreadChecker struct {
 }
@@ -81,8 +83,9 @@ func main() {
 	hr := hexa.NewHealthReporter()
 	hr.AddToChecks(hrpc.NewGRPCHealth("grpc_server", addr))
 	hr.AddToChecks(ThreadChecker{})
-	hc := hexa.NewHealthChecker(l, healthCheckAddr, hr)
-	gutil.PanicErr(hc.Run())
+	ps := probe.NewServer(&http.Server{Addr: probeAddr}, http.NewServeMux())
+	probe.RegisterHealthHandlers(ps, hr)
+	gutil.PanicErr(ps.Run())
 
 	gutil.PanicErr(server.Serve(listener))
 }
