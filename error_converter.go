@@ -1,11 +1,13 @@
 package hrpc
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 
 	"github.com/kamva/hexa"
+	"github.com/kamva/hexa/hexatranslator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
@@ -66,8 +68,8 @@ func NewErrorDetails(t hexa.Translator, hexaErr hexa.Error) *ErrorDetails {
 	}
 }
 
-func NewErrorDetailsFromRawError(ctx hexa.Context, err error) *ErrorDetails {
-	return NewErrorDetails(ctx.Translator(), HexaErrFromErr(err))
+func NewErrorDetailsFromRawError(ctx context.Context, err error) *ErrorDetails {
+	return NewErrorDetails(hexatranslator.CtxTranslator(ctx), HexaErrFromErr(err))
 }
 
 func NewHexaErrFromErrorDetails(details *ErrorDetails) hexa.Error {

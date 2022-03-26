@@ -82,9 +82,9 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 		}
 		fields = append(fields, hlog.MapToFields(o.DurationFormatter(time.Since(startTime)))...)
 
-		logger := l.logger
-		if hContext, err := hexa.NewContextFromRawContext(ctx); err==nil{
-			logger = hContext.(hexa.Context).Logger()
+		logger := hexa.CtxLogger(ctx)
+		if logger == nil {
+			logger = l.logger
 		}
 
 		logger.With(fields...).Info("finished unary call with code " + code.String())

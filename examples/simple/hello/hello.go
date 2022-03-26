@@ -14,12 +14,10 @@ type helloService struct {
 }
 
 func (s *helloService) SayHello(c context.Context, m *Message) (*Message, error) {
-	ctx, _ := hexa.NewContextFromRawContext(c)
-
 	msg := fmt.Sprintf("Hello %s without hexa context :)", m.Val)
-	if ctx != nil {
-		fmt.Println("correlation id: ", ctx.CorrelationID())
-		msg = fmt.Sprintf("Hello %s with hexa context and correlation id: %s", m.Val, ctx.CorrelationID())
+	if hexa.CtxCorrelationId(c) != "" {
+		fmt.Println("correlation id: ", hexa.CtxCorrelationId(c))
+		msg = fmt.Sprintf("Hello %s with hexa context and correlation id: %s", m.Val, hexa.CtxCorrelationId(c))
 	}
 
 	return &Message{Val: msg}, nil

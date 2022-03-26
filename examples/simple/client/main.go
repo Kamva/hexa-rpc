@@ -42,8 +42,8 @@ func main() {
 		CorrelationId: "my_correlation_id",
 		Locale:        "en",
 		User:          hexa.NewGuest(),
-		Logger:        logger,
-		Translator:    translator,
+		BaseLogger:        logger,
+		BaseTranslator:    translator,
 	})
 	msg, err := client.SayHello(ctx, &hello.Message{Val: "mehran"})
 	gutil.PanicErr(err)
