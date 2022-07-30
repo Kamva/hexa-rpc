@@ -1,8 +1,9 @@
 package hrpc
 
 import (
-	"github.com/kamva/hexa"
 	"net/http"
+
+	"github.com/kamva/hexa"
 )
 
 //--------------------------------
@@ -20,5 +21,5 @@ import (
 //--------------------------------
 
 var (
-	ErrUnknownError = hexa.NewError(http.StatusInternalServerError,"lib.hrpc.unknown_error", nil)
+	ErrUnknownError = hexa.NewError(http.StatusInternalServerError, "lib.hrpc.unknown_error")
 )
