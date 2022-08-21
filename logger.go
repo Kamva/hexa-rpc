@@ -2,13 +2,14 @@ package hrpc
 
 import (
 	"fmt"
-	"github.com/kamva/hexa"
+
+	"github.com/kamva/hexa/hlog"
 	"google.golang.org/grpc/grpclog"
 )
 
 // logger implements the gRPC logger v2
 type logger struct {
-	logger hexa.Logger
+	logger hlog.Logger
 	v      int
 }
 
@@ -65,7 +66,7 @@ func (l *logger) V(level int) bool {
 }
 
 // NewLogger returns new instance of the gRPC Logger v2
-func NewLogger(l hexa.Logger, verbosity int) grpclog.LoggerV2 {
+func NewLogger(l hlog.Logger, verbosity int) grpclog.LoggerV2 {
 	return &logger{logger: l, v: verbosity}
 }
 

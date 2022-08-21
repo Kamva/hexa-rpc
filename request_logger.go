@@ -17,7 +17,7 @@ import (
 
 // RequestLogger implements gRPC interceptor to log each request
 type RequestLogger struct {
-	logger      hexa.Logger
+	logger      hlog.Logger
 	logRequest  bool
 	logResponse bool
 }
@@ -72,8 +72,6 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 			fields = append(fields, hlog.Err(err))
 		}
 
-		// TODO: jus in case log level is debug, log the request. its same for the response.
-		// Or maybe we should disable it totally.
 		if o.LogRequest {
 			fields = append(fields, hlog.Any("request", req))
 		}
@@ -94,6 +92,6 @@ func (l *RequestLogger) UnaryServerInterceptor(o LoggerOptions) grpc.UnaryServer
 }
 
 // NewRequestLogger returns new instance of the RequestLogger
-func NewRequestLogger(l hexa.Logger) *RequestLogger {
+func NewRequestLogger(l hlog.Logger) *RequestLogger {
 	return &RequestLogger{logger: l}
 }

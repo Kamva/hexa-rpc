@@ -2,8 +2,10 @@ package hrpc
 
 import (
 	"context"
+
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
+	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -17,7 +19,7 @@ type (
 
 	// ErrInterceptorOptions is the options
 	ErrInterceptorOptions struct {
-		Logger       hexa.Logger
+		Logger       hlog.Logger
 		Translator   hexa.Translator
 		ReportErrors bool // report errors ?
 	}
