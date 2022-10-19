@@ -85,7 +85,8 @@ func main() {
 	hr.AddToChecks(ThreadChecker{})
 	ps := probe.NewServer(&http.Server{Addr: probeAddr}, http.NewServeMux())
 	probe.RegisterHealthHandlers(ps, hr)
-	gutil.PanicErr(ps.Run())
 
+	_, err = ps.Run()
+	gutil.PanicErr(err)
 	gutil.PanicErr(server.Serve(listener))
 }

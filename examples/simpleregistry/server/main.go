@@ -9,6 +9,7 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	hrpc "github.com/kamva/hexa-rpc"
 	"github.com/kamva/hexa-rpc/examples/simple/hello"
@@ -59,8 +60,11 @@ func main() {
 
 	hello.RegisterHelloServer(grpcServer, hello.New())
 
-	hexaSrv :=hrpc.NewHexaService(hrpc.NewGRPCHealth("my_health_server", fmt.Sprintf(":%d", *port)),lis,grpcServer)
+	hexaSrv := hrpc.NewHexaService(hrpc.NewGRPCHealth("my_health_server", fmt.Sprintf(":%d", *port)), lis, grpcServer)
 	r.Register("grpc_server", hexaSrv)
 	go func() { sr.ShutdownBySignals(r, time.Second*30) }()
-	_ = hexaSrv.(hexa.Runnable).Run()
+
+	closeCh, err := hexaSrv.(hexa.Runnable).Run()
+	gutil.PanicErr(err)
+	gutil.PanicErr(<-closeCh)
 }

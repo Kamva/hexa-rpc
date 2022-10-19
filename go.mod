@@ -6,7 +6,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/kamva/gutil v0.0.0-20210827084201-35b6a3421580
-	github.com/kamva/hexa v0.0.0-20220821205325-ac27273ade86
+	github.com/kamva/hexa v0.1.1-0.20221015212329-9cb6c3ee36a4
 	github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.27.0
 	go.opentelemetry.io/otel v1.2.0

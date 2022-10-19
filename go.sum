@@ -146,6 +146,8 @@ github.com/kamva/hexa v0.0.0-20220730171748-0bdb74fc67ca h1:4cZYtNmVI/URs+KEQe4w
 github.com/kamva/hexa v0.0.0-20220730171748-0bdb74fc67ca/go.mod h1:AJ/6TiObRVKfW5lHY33NF8Ms0cphMQQosiFZQCRzAm0=
 github.com/kamva/hexa v0.0.0-20220821205325-ac27273ade86 h1:tlNi9x/mHffYLpcaaTNeCwjmlUDCsl1Pyzthxh7x+6k=
 github.com/kamva/hexa v0.0.0-20220821205325-ac27273ade86/go.mod h1:AJ/6TiObRVKfW5lHY33NF8Ms0cphMQQosiFZQCRzAm0=
+github.com/kamva/hexa v0.1.1-0.20221015212329-9cb6c3ee36a4 h1:dXaYXGya9IjBYIfcpQrAYri2o92rBdEnj6BHT/kb8Mg=
+github.com/kamva/hexa v0.1.1-0.20221015212329-9cb6c3ee36a4/go.mod h1:AJ/6TiObRVKfW5lHY33NF8Ms0cphMQQosiFZQCRzAm0=
 github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd h1:Wa2QzkBIqaWTsWb9gVtQxijZqweUXKkakFLhXOacG5k=
 github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd/go.mod h1:6TmvuXxFe7FD95QvNyIVEt2ZPfYBk3QiKGhGt+UwFbQ=
 github.com/kataras/golog v0.0.9/go.mod h1:12HJgwBIZFNGL0EJnMRhmvGA0PQGx8VFwrZtM4CqbAk=
